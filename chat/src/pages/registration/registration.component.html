@@ -1,0 +1,52 @@
+<div class="registration">
+    <form (ngSubmit)="onSubmit()" #registrationForm="ngForm">
+      
+      <mat-form-field appearance="fill">
+        <mat-label>Felhasználónév</mat-label>
+        <input matInput [(ngModel)]="username" name="username" required #usernameInput="ngModel">
+        <mat-error *ngIf="usernameInput.invalid && usernameInput.touched">
+          A felhasználónév megadása kötelező.
+        </mat-error>
+      </mat-form-field>
+  
+   
+      <mat-form-field appearance="fill">
+        <mat-label>Email</mat-label>
+        <input matInput [(ngModel)]="email" name="email" required email #emailInput="ngModel">
+        <mat-error *ngIf="emailInput.invalid && emailInput.touched">
+          Kérjük, adjon meg érvényes email címet.
+        </mat-error>
+      </mat-form-field>
+  
+   
+      <mat-form-field appearance="fill">
+        <mat-label>Jelszó</mat-label>
+        <input matInput [(ngModel)]="password" name="password" type="password" required #passwordInput="ngModel">
+        <mat-error *ngIf="passwordInput.invalid && passwordInput.touched">
+          A jelszó megadása kötelező.
+        </mat-error>
+      </mat-form-field>
+  
+    
+      <mat-form-field appearance="fill">
+        <mat-label>Jelszó megerősítése</mat-label>
+        <input matInput [(ngModel)]="confirmPassword" name="confirmPassword" type="password" required #confirmPasswordInput="ngModel">
+        <mat-error *ngIf="confirmPasswordInput.invalid && confirmPasswordInput.touched">
+          A jelszó megerősítése kötelező.
+        </mat-error>
+        <mat-error *ngIf="password !== confirmPassword && confirmPasswordInput.touched">
+          A két jelszó nem egyezik meg.
+        </mat-error>
+      </mat-form-field>
+  
+ 
+      <button mat-raised-button color="primary" type="submit" [disabled]="registrationForm.invalid || password !== confirmPassword">
+        Regisztráció
+      </button>
+
+      <button mat-raised-button color="primary" type="button" (click)="back()">
+        Vissza
+      </button>
+    </form>
+  </div>
+  

@@ -1,0 +1,17 @@
+<div class="login">
+    <form (ngSubmit)="login()">
+    <mat-form-field>
+        <mat-label>Felhasználónév</mat-label>
+        <input matInput [(ngModel)]="username" name="username" required>
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>Jelszó</mat-label>
+        <input matInput [(ngModel)]="password" name="password" type="password" required>
+    </mat-form-field>
+    <div class="button">
+        <button mat-raised-button color="primary" type="submit">Bejelentkezés</button>
+        <button mat-raised-button color="primary" type="button" (click)="register()">Regisztráció</button>
+    </div>
+    </form>
+</div>
