@@ -23,12 +23,12 @@ mongoose.connect(url)
     console.log('Hiba a MongoDB adatbázis kapcsolat során:', error);
   });
 
-// Admin regisztrációs útvonal
+// User regisztrációs útvonal
 app.post('/api/userregistration', async (req, res) => {
   const { username, password, email} = req.body;
 
   if (!username || !password || !email) {
-    return res.status(400).json('Nincs fájl az adatokban!');
+    return res.status(400).json({message:'Nincs fájl az adatokban!'});
   }
 
   try {
@@ -46,7 +46,29 @@ app.post('/api/userregistration', async (req, res) => {
 
   } catch (err) {
     console.log('Hiba az adatok mentésekor:', err);
-    res.status(500).json('Hiba az adatok mentésekor!');
+    res.status(500).json({message:'Hiba az adatok mentésekor!'});
+  }
+});
+
+// User bejelentkezési útvonal
+app.post('/api/userlogin', async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+    const user = await UserModel.findOne({ username });
+    if (!user) {
+      return res.status(401).json({message:'Hibás felhasználónév vagy jelszó!'});
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({message:'Hibás felhasználónév vagy jelszó!'});
+    }
+
+    res.status(200).json(user);
+  } catch (err) {
+    console.log('Hiba a bejelentkezés során:', err);
+    res.status(500).json({message:'Hiba a bejelentkezés során!'});
   }
 });
 

@@ -24,13 +24,11 @@ export class RegistrationComponent {
         email: this.email
       }).subscribe(
         success => {
-          console.log('Regisztráció sikeres!', success);
           alert('Regisztráció sikeres!');
           this.router.navigate(['/login']);
         },
         error => {
           const errorMessage = error.error ? error.error.message : 'Ismeretlen hiba történt.';
-          console.log('Hiba történt a regisztráció során: ', error);
           alert("Regisztráció sikertelen: " + errorMessage);
         }
       );
@@ -39,7 +37,6 @@ export class RegistrationComponent {
     }
   }
   
-
   back() {
     this.router.navigate(['/login']);
   }

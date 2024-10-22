@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Router} from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'login',
@@ -10,13 +11,23 @@ export class LoginComponent {
   username: string = '';
   password: string = '';
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private http: HttpClient) {}
 
   login() {
-   
-    console.log('Felhasználónév:', this.username);
-    console.log('Jelszó:', this.password);
 
+    this.http.post('http://localhost:3000/api/userlogin', {
+      username: this.username,
+      password: this.password
+    }).subscribe(
+      response => {
+        alert('Bejelentkezés sikeres!');
+        this.router.navigate(['/registration']);
+      },
+      error => {
+        const errorMessage = error.error ? error.error.message : 'Ismeretlen hiba történt.';
+        alert("Bejelentkezés sikertelen: " + errorMessage); 
+      }
+    );
   }
 
   register() {
