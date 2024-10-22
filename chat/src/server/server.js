@@ -78,6 +78,23 @@ app.post('/api/userlogin', async (req, res) => {
   }
 });
 
+// Users adataok lekérdezése
+app.get('/api/getuser', (req, res) => {
+  UserModel.find({})
+      .then((data) => {
+        const userData = data.map(user => ({
+          id: user._id, 
+          username: user.username
+      }));
+      console.log('Az user lekérdezése sikeres volt!');
+      res.send(userData);
+      })
+      .catch((err) => {
+          console.log('Hiba az user lekérdezésekor:', err);
+          res.status(500).send('Hiba az user lekérdezésekor!');
+      });
+});
+
 app.listen(port, () => {
   console.log(`Szerver fut a http://localhost:${port} címen`);
 });

@@ -2,11 +2,16 @@
     <div class="users-list">
       <h3>Felhasználók</h3>
       <ul>
-        <li *ngFor="let user of users">{{ user }}</li>
+        <li *ngFor="let user of users" (click)="selectUser(user)" [class.selected]="selectedUser === user.username">
+          {{ user.username }} <!-- A username-t jelenítjük meg -->
+        </li>
       </ul>
     </div>
     
     <div class="chat-window">
+      <div class="selected-user">
+        <h4>Beszélgetés: {{ selectedUser }}</h4>
+      </div>
       <div class="messages">
         <div *ngFor="let message of messages">
           <strong>{{ message.user }}:</strong> {{ message.text }}
@@ -16,6 +21,11 @@
         <input [(ngModel)]="currentMessage" placeholder="Írd be az üzeneted..." (keydown.enter)="sendMessage()"/>
         <button (click)="sendMessage()">Küldés</button>
       </div>
+    </div>
+    
+    <div class="user-info">
+      <img src="path/to/your/image.jpg" alt="Profile Picture" class="profile-picture" />
+      <button (click)="logout()" class="logout-button">Kijelentkezés</button>
     </div>
   </div>
   
