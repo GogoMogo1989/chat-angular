@@ -32,6 +32,12 @@ app.post('/api/userregistration', async (req, res) => {
   }
 
   try {
+
+    const existingUser = await UserModel.findOne({ username });
+    if (existingUser) {
+      return res.status(400).json({ message: 'A felhasználónév már foglalt!' });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const userData = new UserModel({

@@ -28,6 +28,7 @@ export class LoginComponent {
         alert("Bejelentkezés sikertelen: " + errorMessage); 
       }
     );
+    
   }
 
   register() {
