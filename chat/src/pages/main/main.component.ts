@@ -1,11 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-
-interface User {
-  _id: string;  
-  username: string;
-}
+import { User } from '../interfaces/user.model';
 
 @Component({
   selector: 'app-main',
@@ -37,10 +33,8 @@ export class MainComponent implements OnInit {
   }
 
   sendMessage() {
-    if (this.currentMessage.trim()) {
       this.messages.push({ user: 'You', text: this.currentMessage });
       this.currentMessage = ''; 
-    }
   }
 
   selectUser(user: User) {

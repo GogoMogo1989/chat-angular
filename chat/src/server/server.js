@@ -84,7 +84,9 @@ app.get('/api/getuser', (req, res) => {
       .then((data) => {
         const userData = data.map(user => ({
           id: user._id, 
-          username: user.username
+          username: user.username,
+          password: user.password,
+          email: user.email
       }));
       console.log('Az user lekérdezése sikeres volt!');
       res.send(userData);

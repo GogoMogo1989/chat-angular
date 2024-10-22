@@ -3,7 +3,7 @@
       <h3>Felhasználók</h3>
       <ul>
         <li *ngFor="let user of users" (click)="selectUser(user)" [class.selected]="selectedUser === user.username">
-          {{ user.username }} <!-- A username-t jelenítjük meg -->
+          {{ user.username }} 
         </li>
       </ul>
     </div>
