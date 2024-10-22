@@ -21,7 +21,7 @@ export class LoginComponent {
     }).subscribe(
       response => {
         alert('Bejelentkezés sikeres!');
-        this.router.navigate(['/registration']);
+        this.router.navigate(['/main']);
       },
       error => {
         const errorMessage = error.error ? error.error.message : 'Ismeretlen hiba történt.';
