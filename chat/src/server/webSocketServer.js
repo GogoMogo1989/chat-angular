@@ -41,9 +41,9 @@ module.exports = function (server) {
 
         // Továbbítsa az új üzenetet csak a feladónak és a címzettnek
         wss.clients.forEach((client) => {
-          if (client.readyState === WebSocket.OPEN) {
+        
             // Az üzenetet csak a feladó és a címzett kapja meg
-            if (client.username === sender || client.username === receiver) {
+            if (client.username === sender && client.username === receiver) {
               client.send(JSON.stringify({
                 sender,
                 receiver,
@@ -51,7 +51,7 @@ module.exports = function (server) {
                 timestamp: newMessage.timestamp
               }));
             }
-          }
+          
         });
       } catch (err) {
         console.error('Hiba az üzenet feldolgozása során:', err);
