@@ -15,7 +15,7 @@ export class MainComponent implements OnInit {
   messages: { user: string, text: string }[] = []; 
   currentMessage: string = '';  
   selectedUser: string | null = null;
-  currentUser: any
+  currentUser: any;
 
   constructor(private http: HttpClient, private router: Router, private authService: AuthService) {}
 

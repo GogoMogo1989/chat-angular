@@ -1,21 +1,25 @@
 const express = require('express');
-const app = express();
+const http = require('http'); 
+const WebSocket = require('ws'); 
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
 
-const port = process.env.PORT
-const url = process.env.MONGOOSE_URI
-const jwtSecretKey = process.env.JWT_SECRETKEY
+const port = process.env.PORT || 8080; // Ha nem adsz meg portot, alapértelmezetten 8080
+const url = process.env.MONGOOSE_URI;
+const jwtSecretKey = process.env.JWT_SECRETKEY;
 
-//Model import
-const UserModel = require('./models/userSchema')
+// Model import
+const UserModel = require('./models/userSchema');
+const MessageModel = require('./models/messageSchema');
 
 // Middleware
+const app = express();
 app.use(cors());
 app.use(express.json({ limit: '500mb' }));
+app.use(bodyParser.json({ limit: '500mb' }));
 
 mongoose.connect(url) 
   .then(() => {
@@ -25,16 +29,120 @@ mongoose.connect(url)
     console.log('Hiba a MongoDB adatbázis kapcsolat során:', error);
   });
 
+const server = http.createServer(app);
+
+const wss = new WebSocket.Server({ server });
+
+// WebSocket események
+wss.on('listening', () => {
+  console.log('WebSocket server fut a 8080 porton');
+});
+
+wss.on('connection', (ws) => {
+  console.log('Új WebSocket kapcsolat létrejött.');
+
+  ws.on('message', async (message) => {
+    console.log(`Üzenet a klienstől: ${message}`);
+
+    const msgData = JSON.parse(message);
+
+    const newMessage = new MessageModel({
+      sender: msgData.sender,
+      receiver: msgData.receiver,
+      message: msgData.message,
+      timestamp: new Date(), 
+    });
+
+    try {
+      await newMessage.save();
+      console.log('Az üzenet sikeresen elmentve a MongoDB-be!');
+    } catch (err) {
+      console.log('Hiba az üzenet mentésekor:', err);
+    }
+
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN && 
+          (client.username === msgData.sender || client.username === msgData.receiver)) {
+        client.send(JSON.stringify({ 
+          sender: msgData.sender, 
+          receiver: msgData.receiver, 
+          message: msgData.message 
+        }));
+      }
+    });
+  });
+});
+
+// Websocket végpont
+app.get('/api/messages/:senderId/:receiverId', async (req, res) => {
+  const { senderId, receiverId } = req.params;
+
+  try {
+    const messages = await MessageModel.find({
+      $or: [
+        { sender: senderId, receiver: receiverId },
+        { sender: receiverId, receiver: senderId },
+      ],
+    }).sort({ timestamp: 1 });
+
+    res.status(200).json(messages);
+    console.log(messages);
+  } catch (err) {
+    console.log('Hiba az üzenetek lekérdezésekor:', err);
+    res.status(500).json({ message: 'Hiba az üzenetek lekérdezésekor!' });
+  }
+});
+
+// Üzenet küldése (POST)
+app.post('/api/messages', async (req, res) => {
+  const { sender, receiver, message } = req.body;
+
+  if (!sender || !receiver || !message) {
+    return res.status(400).json({ message: 'Kérjük, adja meg az összes szükséges mezőt!' });
+  }
+
+  const newMessage = new MessageModel({
+    sender,
+    receiver,
+    message,
+    timestamp: new Date(),
+  });
+
+  try {
+    // Üzenet elmentése a MongoDB-be
+    await newMessage.save();
+    console.log('Az üzenet sikeresen elmentve a MongoDB-be!');
+
+    // Értesítés a WebSocket klienseinek
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN && 
+          (client.username === sender || client.username === receiver)) {
+        client.send(JSON.stringify({
+          sender,
+          receiver,
+          message,
+          timestamp: newMessage.timestamp,
+        }));
+      }
+    });
+
+    res.status(201).json(newMessage);
+  } catch (err) {
+    console.log('Hiba az üzenet mentésekor:', err);
+    res.status(500).json({ message: 'Hiba az üzenet mentésekor!' });
+  }
+});
+
+
 // User regisztrációs útvonal
 app.post('/api/userregistration', async (req, res) => {
-  const { username, password, email, profileImage} = req.body;
+  const { username, password, email, profileImage } = req.body;
 
   if (!username || !password || !email || !profileImage) {
-    return res.status(400).json({message:'Nincs fájl az adatokban!'});
+    return res.status(400).json({ message: 'Nincs fájl az adatokban!' });
   }
 
   try {
-
     const existingUser = await UserModel.findOne({ username });
     if (existingUser) {
       return res.status(400).json({ message: 'A felhasználónév már foglalt!' });
@@ -46,7 +154,7 @@ app.post('/api/userregistration', async (req, res) => {
       username,
       password: hashedPassword, 
       email,
-      profileImage
+      profileImage,
     });
 
     await userData.save();
@@ -55,7 +163,7 @@ app.post('/api/userregistration', async (req, res) => {
 
   } catch (err) {
     console.log('Hiba az adatok mentésekor:', err);
-    res.status(500).json({message:'Hiba az adatok mentésekor!'});
+    res.status(500).json({ message: 'Hiba az adatok mentésekor!' });
   }
 });
 
@@ -66,12 +174,12 @@ app.post('/api/userlogin', async (req, res) => {
   try {
     const user = await UserModel.findOne({ username });
     if (!user) {
-      return res.status(401).json({message:'Hibás felhasználónév vagy jelszó!'});
+      return res.status(401).json({ message: 'Hibás felhasználónév vagy jelszó!' });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(401).json({message:'Hibás felhasználónév vagy jelszó!'});
+      return res.status(401).json({ message: 'Hibás felhasználónév vagy jelszó!' });
     }
 
     const token = jwt.sign({ id: user._id, username: user.username }, jwtSecretKey, { expiresIn: '1h' });
@@ -82,56 +190,56 @@ app.post('/api/userlogin', async (req, res) => {
         id: user._id,
         username: user.username,
         email: user.email,
-        profileImage: user.profileImage
-      }
+        profileImage: user.profileImage,
+      },
     });
-    
+
   } catch (err) {
     console.log('Hiba a bejelentkezés során:', err);
-    res.status(500).json({message:'Hiba a bejelentkezés során!'});
+    res.status(500).json({ message: 'Hiba a bejelentkezés során!' });
   }
 });
 
-// Users adataok lekérdezése
+// Users adatok lekérdezése
 app.get('/api/getuser', (req, res) => {
   UserModel.find({})
-      .then((data) => {
-        const userData = data.map(user => ({
-          id: user._id, 
-          username: user.username,
-          email: user.email,
-          profileImage: user.profileImage
+    .then((data) => {
+      const userData = data.map(user => ({
+        id: user._id, 
+        username: user.username,
+        email: user.email,
+        profileImage: user.profileImage,
       }));
       console.log('Az user lekérdezése sikeres volt!');
       res.send(userData);
-      })
-      .catch((err) => {
-          console.log('Hiba az user lekérdezésekor:', err);
-          res.status(500).send('Hiba az user lekérdezésekor!');
-      });
+    })
+    .catch((err) => {
+      console.log('Hiba az user lekérdezésekor:', err);
+      res.status(500).send('Hiba az user lekérdezésekor!');
+    });
 });
 
 // User adatok lekérdezése ID alapján
 app.get('/api/getuser/:id', (req, res) => {
   const id = req.params.id;
   UserModel.findById(id)
-      .then((data) => {
-          if (!data) {
-              return res.status(404).send('A keresett adat nem található!');
-          }
-          res.send({
-            id: data._id,
-            username: data.username,
-            email: data.email,
-            profileImage: data.profileImage
-          });
-      })
-      .catch((err) => {
-          console.log('Hiba az adat lekérdezésekor:', err);
-          res.status(500).send('Hiba az adat lekérdezésekor!');
+    .then((data) => {
+      if (!data) {
+        return res.status(404).send('A keresett adat nem található!');
+      }
+      res.send({
+        id: data._id,
+        username: data.username,
+        email: data.email,
+        profileImage: data.profileImage,
       });
+    })
+    .catch((err) => {
+      console.log('Hiba az adat lekérdezésekor:', err);
+      res.status(500).send('Hiba az adat lekérdezésekor!');
+    });
 });
 
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`Szerver fut a http://localhost:${port} címen`);
 });
