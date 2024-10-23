@@ -23,8 +23,8 @@ export class LoginComponent {
     }).subscribe(
       response => {
         sessionStorage.setItem('userId', response.user.id);
+        sessionStorage.setItem('username', response.user.username);
         this.authService.login(response.token)
-        alert('Bejelentkezés sikeres!');
         this.router.navigate(['/main']);
       },
       error => {

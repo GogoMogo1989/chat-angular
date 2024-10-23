@@ -29,7 +29,6 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-   
     if (this.ws) {
       this.ws.close();
     }
@@ -37,6 +36,19 @@ export class MainComponent implements OnInit, OnDestroy {
 
   setupWebSocket() {
     this.ws = new WebSocket('ws://localhost:3000'); 
+
+    this.ws.onopen = () => {
+
+      const username = sessionStorage.getItem('username');
+
+      if (username) {
+        const usernameMessage = {
+          type: 'setUsername',
+          username: username 
+        };
+        this.ws.send(JSON.stringify(usernameMessage));
+      }
+    };
 
     // Üzenetek fogadása a szervertől
     this.ws.onmessage = (event) => {
