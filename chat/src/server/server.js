@@ -74,22 +74,23 @@ wss.on('connection', (ws) => {
   });
 });
 
-//Üzenetek elérése
+// Üzenetek elérése
 app.get('/api/messages/:senderId/:receiverId', async (req, res) => {
   const { senderId, receiverId } = req.params;
 
-  const chatId = [senderId, receiverId].sort().join('-'); 
+  // Generálj egy azonosítót a sender és receiver nevéből
+  const chatId = [senderId, receiverId].sort().join('-');
 
   try {
-      const messages = await MessageModel.find({ chatId }).sort({ timestamp: 1 });
-
-      res.status(200).json(messages);
-      console.log(messages);
+    const messages = await MessageModel.find({ chatId }).sort({ timestamp: 1 });
+    res.status(200).json(messages);
+    console.log(messages);
   } catch (err) {
-      console.log('Hiba az üzenetek lekérdezésekor:', err);
-      res.status(500).json({ message: 'Hiba az üzenetek lekérdezésekor!' });
+    console.log('Hiba az üzenetek lekérdezésekor:', err);
+    res.status(500).json({ message: 'Hiba az üzenetek lekérdezésekor!' });
   }
 });
+
 
 // Üzenet küldése (POST)
 app.post('/api/messages', async (req, res) => {
@@ -99,8 +100,10 @@ app.post('/api/messages', async (req, res) => {
     return res.status(400).json({ message: 'Kérjük, adja meg az összes szükséges mezőt!' });
   }
 
+  const chatId = [sender, receiver].sort().join('-');
+
   const newMessage = new MessageModel({
-    chatId: `${sender}-${receiver}`,
+    chatId: chatId,
     sender,
     receiver,
     message,
