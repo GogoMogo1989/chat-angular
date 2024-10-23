@@ -23,8 +23,9 @@
       </div>
     </div>
     
-    <div class="user-info">
-      <img src="path/to/your/image.jpg" alt="Profile Picture" class="profile-picture" />
+    <div class="user-info" >
+      <img [src]="currentUser?.profileImage" alt="Profile Picture" class="profile-picture" />
+      <h2>{{currentUser?.username}}</h2>
       <button (click)="logout()" class="logout-button">Kijelentkezés</button>
     </div>
   </div>

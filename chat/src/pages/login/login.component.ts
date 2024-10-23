@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { Router} from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { AuthService } from '../../authguard/auth.service';
+import { LoginResponse } from '../interfaces/login.model';
 
 @Component({
   selector: 'login',
@@ -11,15 +13,17 @@ export class LoginComponent {
   username: string = '';
   password: string = '';
 
-  constructor(private router: Router, private http: HttpClient) {}
+  constructor(private router: Router, private http: HttpClient, private authService: AuthService) {}
 
   login() {
 
-    this.http.post('http://localhost:3000/api/userlogin', {
+    this.http.post<LoginResponse>('http://localhost:3000/api/userlogin', {
       username: this.username,
       password: this.password
     }).subscribe(
       response => {
+        sessionStorage.setItem('userId', response.user.id);
+        this.authService.login(response.token)
         alert('Bejelentkezés sikeres!');
         this.router.navigate(['/main']);
       },

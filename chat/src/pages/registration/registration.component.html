@@ -39,6 +39,9 @@
         </mat-error>
       </mat-form-field>
   
+    <mat-label>Kép feltöltése</mat-label>
+    <input type="file" (change)="onFileSelected($event)" accept="image/*" class="upload-input">
+    <mat-error *ngIf="imageError">{{imageError}}</mat-error>
  
       <button mat-raised-button color="primary" type="submit" [disabled]="registrationForm.invalid || password !== confirmPassword">
         Regisztráció
