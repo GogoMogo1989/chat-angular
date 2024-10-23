@@ -1,14 +1,14 @@
 const express = require('express');
 const http = require('http'); 
-const WebSocket = require('ws'); 
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
+const WebSocketServer = require('./webSocketServer')
 
-const port = process.env.PORT || 8080; // Ha nem adsz meg portot, alapértelmezetten 8080
+const port = process.env.PORT || 8080; 
 const url = process.env.MONGOOSE_URI;
 const jwtSecretKey = process.env.JWT_SECRETKEY;
 
@@ -18,10 +18,14 @@ const MessageModel = require('./models/messageSchema');
 
 // Middleware
 const app = express();
+const server = http.createServer(app);
+WebSocketServer(server);
+
 app.use(cors());
 app.use(express.json({ limit: '500mb' }));
 app.use(bodyParser.json({ limit: '500mb' }));
 
+//Mongodb
 mongoose.connect(url) 
   .then(() => {
     console.log('A MongoDB adatbázishoz sikeresen kapcsolódva!');
@@ -29,50 +33,6 @@ mongoose.connect(url)
   .catch((error) => {
     console.log('Hiba a MongoDB adatbázis kapcsolat során:', error);
   });
-
-const server = http.createServer(app);
-
-const wss = new WebSocket.Server({ server });
-
-// WebSocket események
-wss.on('listening', () => {
-  console.log('WebSocket server fut a 8080 porton');
-});
-
-wss.on('connection', (ws) => {
-  console.log('Új WebSocket kapcsolat létrejött.');
-
-  ws.on('message', async (message) => {
-    console.log(`Üzenet a klienstől: ${message}`);
-
-    const msgData = JSON.parse(message);
-
-    const newMessage = new MessageModel({
-      sender: msgData.sender,
-      receiver: msgData.receiver,
-      message: msgData.message,
-      timestamp: new Date(), 
-    });
-
-    try {
-      await newMessage.save();
-      console.log('Az üzenet sikeresen elmentve a MongoDB-be!');
-    } catch (err) {
-      console.log('Hiba az üzenet mentésekor:', err);
-    }
-
-    wss.clients.forEach((client) => {
-      if (client.readyState === WebSocket.OPEN && 
-          (client.username === msgData.sender || client.username === msgData.receiver)) {
-        client.send(JSON.stringify({ 
-          sender: msgData.sender, 
-          receiver: msgData.receiver, 
-          message: msgData.message 
-        }));
-      }
-    });
-  });
-});
 
 // Üzenetek elérése
 app.get('/api/messages/:senderId/:receiverId', async (req, res) => {
@@ -90,7 +50,6 @@ app.get('/api/messages/:senderId/:receiverId', async (req, res) => {
     res.status(500).json({ message: 'Hiba az üzenetek lekérdezésekor!' });
   }
 });
-
 
 // Üzenet küldése (POST)
 app.post('/api/messages', async (req, res) => {
@@ -114,27 +73,12 @@ app.post('/api/messages', async (req, res) => {
     // Üzenet elmentése a MongoDB-be
     await newMessage.save();
     console.log('Az üzenet sikeresen elmentve a MongoDB-be!');
-
-    // Értesítés a WebSocket klienseinek
-    wss.clients.forEach((client) => {
-      if (client.readyState === WebSocket.OPEN && 
-          (client.username === sender || client.username === receiver)) {
-        client.send(JSON.stringify({
-          sender,
-          receiver,
-          message,
-          timestamp: newMessage.timestamp,
-        }));
-      }
-    });
-
     res.status(201).json(newMessage);
   } catch (err) {
     console.log('Hiba az üzenet mentésekor:', err);
     res.status(500).json({ message: 'Hiba az üzenet mentésekor!' });
   }
 });
-
 
 // User regisztrációs útvonal
 app.post('/api/userregistration', async (req, res) => {

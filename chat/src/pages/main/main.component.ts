@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { User } from '../interfaces/user.model';
@@ -9,7 +9,7 @@ import { AuthService } from '../../authguard/auth.service';
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.css']
 })
-export class MainComponent implements OnInit {
+export class MainComponent implements OnInit, OnDestroy {
   users: User[] = []; 
   messages: { user: string, text: string }[] = []; 
   currentMessage: string = '';  
@@ -28,23 +28,27 @@ export class MainComponent implements OnInit {
     this.setupWebSocket();
   }
 
-  setupWebSocket() {
+  ngOnDestroy() {
    
-    this.ws = new WebSocket('ws://localhost:8080'); 
+    if (this.ws) {
+      this.ws.close();
+    }
+  }
 
-    this.ws.onopen = () => {
-      console.log('WebSocket kapcsolat létrejött.');
-    };
+  setupWebSocket() {
+    this.ws = new WebSocket('ws://localhost:3000'); 
 
+    // Üzenetek fogadása a szervertől
     this.ws.onmessage = (event) => {
-      const message = JSON.parse(event.data);
-      if (message.sender !== this.currentUser.username) {
-        this.messages.push({ user: message.sender, text: message.message });
+      const receivedData = JSON.parse(event.data);
+      if (receivedData.sender && receivedData.message) {
+        this.messages.push({ user: receivedData.sender, text: receivedData.message });
       }
     };
 
-    this.ws.onclose = () => {
-      console.log('WebSocket kapcsolat lezárult.');
+    // Hiba esetén kezelje
+    this.ws.onerror = (error) => {
+      console.error('WebSocket hiba:', error);
     };
   }
 
@@ -63,6 +67,9 @@ export class MainComponent implements OnInit {
     this.http.get<User[]>('http://localhost:3000/api/getuser').subscribe(
       (data) => {
         this.users = data;  
+        if (this.users.length > 0) {
+          this.selectUser(this.users[0]); 
+        }
       },
       (error) => {
         console.error('Hiba a felhasználók lekérdezésekor:', error);
@@ -72,7 +79,7 @@ export class MainComponent implements OnInit {
 
   selectUser(user: User) {
     this.selectedUser = user.username; 
-    this.getMessages(this.currentUser.username, this.selectedUser); // Üzenetek lekérdezése
+    this.getMessages(this.currentUser.username, this.selectedUser);
   }
 
   getMessages(sender: string, receiver: string) {
@@ -97,15 +104,12 @@ export class MainComponent implements OnInit {
       message: this.currentMessage
     };
 
-    this.http.post('http://localhost:3000/api/messages', messageData).subscribe(
-      (response: any) => {
-        this.messages.push({ user: 'You', text: this.currentMessage });
-        this.currentMessage = ''; 
-      },
-      (error) => {
-        console.error('Hiba az üzenet küldésekor:', error);
-      }
-    );
+     if (this.ws.readyState === WebSocket.OPEN) {
+      this.ws.send(JSON.stringify(messageData));
+    }
+
+    this.currentMessage = ''; 
+
   }
 
   logout() {
