@@ -6,6 +6,7 @@ const cors = require('cors');
 const bcrypt = require('bcrypt');
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
+const bodyParser = require('body-parser');
 
 const port = process.env.PORT || 8080; // Ha nem adsz meg portot, alapértelmezetten 8080
 const url = process.env.MONGOOSE_URI;
@@ -73,23 +74,20 @@ wss.on('connection', (ws) => {
   });
 });
 
-// Websocket végpont
+//Üzenetek elérése
 app.get('/api/messages/:senderId/:receiverId', async (req, res) => {
   const { senderId, receiverId } = req.params;
 
-  try {
-    const messages = await MessageModel.find({
-      $or: [
-        { sender: senderId, receiver: receiverId },
-        { sender: receiverId, receiver: senderId },
-      ],
-    }).sort({ timestamp: 1 });
+  const chatId = [senderId, receiverId].sort().join('-'); 
 
-    res.status(200).json(messages);
-    console.log(messages);
+  try {
+      const messages = await MessageModel.find({ chatId }).sort({ timestamp: 1 });
+
+      res.status(200).json(messages);
+      console.log(messages);
   } catch (err) {
-    console.log('Hiba az üzenetek lekérdezésekor:', err);
-    res.status(500).json({ message: 'Hiba az üzenetek lekérdezésekor!' });
+      console.log('Hiba az üzenetek lekérdezésekor:', err);
+      res.status(500).json({ message: 'Hiba az üzenetek lekérdezésekor!' });
   }
 });
 
@@ -102,6 +100,7 @@ app.post('/api/messages', async (req, res) => {
   }
 
   const newMessage = new MessageModel({
+    chatId: `${sender}-${receiver}`,
     sender,
     receiver,
     message,

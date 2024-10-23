@@ -9,7 +9,6 @@ import { AuthService } from '../../authguard/auth.service';
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.css']
 })
-
 export class MainComponent implements OnInit {
   users: User[] = []; 
   messages: { user: string, text: string }[] = []; 
@@ -49,17 +48,48 @@ export class MainComponent implements OnInit {
     );
   }
 
-  sendMessage() {
-      this.messages.push({ user: 'You', text: this.currentMessage });
-      this.currentMessage = ''; 
-  }
-
   selectUser(user: User) {
     this.selectedUser = user.username; 
+    this.getMessages(this.currentUser.username, this.selectedUser); // Üzenetek lekérdezése
+  }
+
+  getMessages(sender: string, receiver: string) {
+    this.http.get<{ sender: string, receiver: string, message: string }[]>(`http://localhost:3000/api/messages/${sender}/${receiver}`).subscribe(
+      (data) => {
+        this.messages = data.map(msg => ({ user: msg.sender, text: msg.message }));
+      },
+      (error) => {
+        console.error('Hiba az üzenetek lekérdezésekor:', error);
+      }
+    );
+  }
+
+  sendMessage() {
+    if (!this.currentMessage || !this.selectedUser) {
+      return; // Ellenőrizzük, hogy van üzenet és van kiválasztott felhasználó
+    }
+
+    const messageData = {
+      sender: this.currentUser.username,
+      receiver: this.selectedUser,
+      message: this.currentMessage
+    };
+
+    // POST kérés az üzenet küldésére
+    this.http.post('http://localhost:3000/api/messages', messageData).subscribe(
+      (response: any) => {
+        // Frissítsük az üzeneteket
+        this.messages.push({ user: 'You', text: this.currentMessage });
+        this.currentMessage = ''; // Üzenet mező törlése
+      },
+      (error) => {
+        console.error('Hiba az üzenet küldésekor:', error);
+      }
+    );
   }
 
   logout() {
-    this.authService.logout()
+    this.authService.logout();
     this.router.navigate(['/login']);
   }
 }
