@@ -190,31 +190,36 @@ app.get('/api/getuser/:id', (req, res) => {
 //User adatok frissítése
 app.put('/api/updateuser/:id', async (req, res) => {
   const id = req.params.id;
-  const {username, email, profileImage, password} = req.body
+  const updatedData = req.body; 
 
-  if (password) {
+  if (updatedData.password) {
     try {
-      password = await bcrypt.hash(password, 10);
+      updatedData.password = await bcrypt.hash(updatedData.password, 10);
     } catch (hashError) {
       console.log('Hiba a jelszó hash-elésekor:', hashError);
       return res.status(500).send('Hiba a jelszó hash-elésekor!');
     }
   }
 
-  UserModel.findByIdAndUpdate(
-    id, {username, email, profileImage, password}, { new: true }) 
+  UserModel.findByIdAndUpdate(id, updatedData, { new: true }) 
     .then((data) => {
       if (!data) {
         return res.status(404).send('A frissített adat nem található!');
       }
-      console.log('Az adat sikeresen frissítve lett!');
-      res.status(200).send(data);
+      res.send({
+        id: data._id,
+        username: data.username,
+        email: data.email,
+        profileImage: data.profileImage,
+        password: data.password
+      });
     })
     .catch((err) => {
       console.log('Hiba az adat frissítésekor:', err);
       res.status(500).send('Hiba az adat frissítésekor!');
     });
 });
+
 
 server.listen(port, () => {
   console.log(`Szerver fut a http://localhost:${port} címen`);

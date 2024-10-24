@@ -53,7 +53,6 @@ export class MainComponent implements OnInit, OnDestroy {
       }
     };
 
-    // Üzenetek fogadása a szervertől
     this.ws.onmessage = (event) => {
       const receivedData = JSON.parse(event.data);
     
@@ -65,7 +64,6 @@ export class MainComponent implements OnInit, OnDestroy {
       }
     };
     
-    // Hiba esetén kezelje
     this.ws.onerror = (error) => {
       console.error('WebSocket hiba:', error);
     };
