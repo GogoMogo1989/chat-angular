@@ -100,7 +100,7 @@ app.post('/api/userregistration', async (req, res) => {
       username,
       password: hashedPassword, 
       email,
-      profileImage,
+      profileImage: profileImage.replace(/^data:image\/\w+;base64,/, ''),
     });
 
     await userData.save();
@@ -112,6 +112,7 @@ app.post('/api/userregistration', async (req, res) => {
     res.status(500).json({ message: 'Hiba az adatok mentésekor!' });
   }
 });
+
 
 // User bejelentkezési útvonal
 app.post('/api/userlogin', async (req, res) => {
@@ -183,6 +184,33 @@ app.get('/api/getuser/:id', (req, res) => {
     .catch((err) => {
       console.log('Hiba az adat lekérdezésekor:', err);
       res.status(500).send('Hiba az adat lekérdezésekor!');
+    });
+});
+
+//User adatok frissítése
+app.put('/api/updateuser/:id', (req, res) => {
+  const id = req.params.id;
+  const updatedData = req.body; 
+
+  if (updatedData.profileImage) {
+    updatedData.profileImage = updatedData.profileImage.replace(/^data:image\/\w+;base64,/, '');
+  }
+
+  UserModel.findByIdAndUpdate(id, updatedData, { new: true }) 
+    .then((data) => {
+      if (!data) {
+        return res.status(404).send('A frissített adat nem található!');
+      }
+      res.send({
+        id: data._id,
+        username: data.username,
+        email: data.email,
+        profileImage: data.profileImage,
+      });
+    })
+    .catch((err) => {
+      console.log('Hiba az adat frissítésekor:', err);
+      res.status(500).send('Hiba az adat frissítésekor!');
     });
 });
 
