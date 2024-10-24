@@ -45,6 +45,13 @@
     border-color: #3b82f6;
 }
 
+.input-area input:disabled {
+    background-color: #d1d5db; 
+    color: #6b7280; 
+    border-color: #9ca3af; 
+    cursor: not-allowed; 
+}
+
 .button-group {
     display: flex;
     justify-content: space-between;
