@@ -4,7 +4,7 @@
       <form (ngSubmit)="onSubmit()" #userForm="ngForm">
         <div class="input-area">
           <label for="username">Felhasználónév</label>
-          <input id="username" name="username" type="text" [(ngModel)]="currentUser.username" required #username="ngModel">
+          <input id="username" name="username" type="text" [(ngModel)]="currentUser.username" required #username="ngModel" disabled>
           <div *ngIf="username.invalid && username.touched" class="error">A felhasználónév kötelező!</div>
         </div>
   
@@ -13,7 +13,7 @@
           <input id="email" name="email" type="email" [(ngModel)]="currentUser.email" required #email="ngModel">
           <div *ngIf="email.invalid && email.touched" class="error">Érvényes email cím szükséges!</div>
         </div>
-        
+
         <div class="input-area">
             <label for="password">Jelszó</label>
             <input id="password" name="password" type="password" [(ngModel)]="password" required #passwordInput="ngModel">
