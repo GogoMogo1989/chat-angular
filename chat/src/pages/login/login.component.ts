@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router} from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { AuthService } from '../../authguard/auth.service';
+import { AuthService } from '../../service/auth.service';
 import { LoginResponse } from '../interfaces/login.model';
 
 @Component({

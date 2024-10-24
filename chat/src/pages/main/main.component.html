@@ -1,17 +1,17 @@
 <div class="chat-container">
     <div class="users-list">
-      <h3>Felhasználók</h3>
-      <ul>
-        <li *ngFor="let user of users" (click)="selectUser(user)" [class.selected]="selectedUser === user.username">
-          {{ user.username }} 
-        </li>
-      </ul>
+        <h3>Felhasználók</h3>
+        <ul>
+            <li *ngFor="let user of users" (click)="selectUser(user)" [class.selected]="selectedUser === user.username">
+            <div class="profile-image-wrapper">
+                <img [src]="user.profileImage" alt="{{ user.username }}" class="profile-image">
+            </div>
+            <span>{{ user.username }}</span>
+            </li>
+        </ul>
     </div>
     
     <div class="chat-window">
-      <div class="selected-user">
-        <h4>Beszélgetés: {{ selectedUser }}</h4>
-      </div>
       <div class="messages">
         <div *ngFor="let message of messages">
           <strong>{{ message.user }}:</strong> {{ message.text }}

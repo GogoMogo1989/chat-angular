@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { User } from '../interfaces/user.model';
-import { AuthService } from '../../authguard/auth.service';
+import { AuthService } from '../../service/auth.service';
 
 @Component({
   selector: 'app-main',
