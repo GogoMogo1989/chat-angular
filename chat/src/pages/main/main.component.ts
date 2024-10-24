@@ -53,11 +53,15 @@ export class MainComponent implements OnInit, OnDestroy {
     // Üzenetek fogadása a szervertől
     this.ws.onmessage = (event) => {
       const receivedData = JSON.parse(event.data);
-      if (receivedData.sender && receivedData.message) {
+    
+      if (
+        (receivedData.sender === this.currentUser.username && receivedData.receiver === this.selectedUser) ||
+        (receivedData.sender === this.selectedUser && receivedData.receiver === this.currentUser.username)
+      ) {
         this.messages.push({ user: receivedData.sender, text: receivedData.message });
       }
     };
-
+    
     // Hiba esetén kezelje
     this.ws.onerror = (error) => {
       console.error('WebSocket hiba:', error);
