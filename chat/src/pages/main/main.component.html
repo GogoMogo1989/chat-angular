@@ -27,6 +27,8 @@
       <img [src]="currentUser?.profileImage" alt="Profile Picture" class="profile-picture" />
       <h2>{{currentUser?.username}}</h2>
       <button (click)="logout()" class="logout-button">Kijelentkezés</button>
+      <button (click)="openUser()" class="user-button">Szerkesztés</button>
+      <app-user #user></app-user>
     </div>
   </div>
   

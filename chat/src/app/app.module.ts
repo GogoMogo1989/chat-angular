@@ -10,6 +10,7 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from '../pages/login/login.component';
 import { RegistrationComponent } from '../pages/registration/registration.component';
 import { MainComponent } from '../pages/main/main.component';
+import { UserComponent } from '../pages/user/user.component';
 
 import { provideHttpClient } from '@angular/common/http';
 
@@ -18,7 +19,8 @@ import { provideHttpClient } from '@angular/common/http';
     AppComponent,
     LoginComponent,
     RegistrationComponent,
-    MainComponent
+    MainComponent,
+    UserComponent
   ],
   imports: [
     BrowserModule,

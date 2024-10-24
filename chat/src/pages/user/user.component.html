@@ -1,0 +1,41 @@
+<div class="modal-overlay" *ngIf="isModalOpen">
+    <div class="modal">
+      <h2>Felhasználó szerkesztése</h2>
+      <form (ngSubmit)="onSubmit()" #userForm="ngForm">
+        <div class="input-area">
+          <label for="username">Felhasználónév</label>
+          <input id="username" name="username" type="text" [(ngModel)]="currentUser.username" required #username="ngModel">
+          <div *ngIf="username.invalid && username.touched" class="error">A felhasználónév kötelező!</div>
+        </div>
+  
+        <div class="input-area">
+          <label for="email">Email cím</label>
+          <input id="email" name="email" type="email" [(ngModel)]="currentUser.email" required #email="ngModel">
+          <div *ngIf="email.invalid && email.touched" class="error">Érvényes email cím szükséges!</div>
+        </div>
+  
+        <div class="input-area">
+          <label for="password">Jelszó</label>
+          <input id="password" name="password" type="password" ngModel required #password="ngModel">
+          <div *ngIf="password.invalid && password.touched" class="error">A jelszó kötelező!</div>
+        </div>
+  
+        <div class="input-area">
+          <label for="confirm-password">Jelszó megerősítése</label>
+          <input id="confirm-password" name="confirmPassword" type="password" ngModel required #confirmPassword="ngModel">
+          <div *ngIf="confirmPassword.invalid && confirmPassword.touched" class="error">A jelszó megerősítése kötelező!</div>
+        </div>
+  
+        <div class="input-area">
+          <label for="profileImage">Kép feltöltése</label>
+          <input id="profileImage" name="profileImage" type="file" (change)="onFileSelected($event)">
+        </div>
+  
+        <div class="button-group">
+          <button class="user-button" type="submit" [disabled]="userForm.invalid">Mentés</button>
+          <button class="user-button cancel" type="button" (click)="closeModal()">Vissza</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  

@@ -1,8 +1,9 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { User } from '../interfaces/user.model';
+import { User } from '../../interfaces/user.model';
 import { AuthService } from '../../service/auth.service';
+import { UserComponent } from '../user/user.component';
 
 @Component({
   selector: 'app-main',
@@ -16,6 +17,8 @@ export class MainComponent implements OnInit, OnDestroy {
   selectedUser!: string
   currentUser: any;
   private ws!: WebSocket;
+
+  @ViewChild('user') user!: UserComponent;
 
   constructor(private http: HttpClient, private router: Router, private authService: AuthService) {}
 
@@ -131,5 +134,9 @@ export class MainComponent implements OnInit, OnDestroy {
   logout() {
     this.authService.logout();
     this.router.navigate(['/login']);
+  }
+
+  openUser() {
+    this.user.openModal()
   }
 }

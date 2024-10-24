@@ -165,3 +165,18 @@
 .users-list li:hover {
     background-color: #d1d5db;
 }
+
+.user-button {
+    padding: 12px 20px;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background-color 0.3s ease;
+}
+  
+.user-button:hover {
+    background-color: #2563eb;
+}
