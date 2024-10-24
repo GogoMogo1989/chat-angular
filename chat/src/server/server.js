@@ -187,10 +187,20 @@ app.get('/api/getuser/:id', (req, res) => {
 });
 
 //User adatok frissítése
-app.put('/api/updateuser/:id', (req, res) => {
+app.put('/api/updateuser/:id', async (req, res) => {
   const id = req.params.id;
   const updatedData = req.body; 
 
+  if (updatedData.password) {
+    try {
+      updatedData.password = await bcrypt.hash(updatedData.password, 10);
+    } catch (hashError) {
+      console.log('Hiba a jelszó hash-elésekor:', hashError);
+      return res.status(500).send('Hiba a jelszó hash-elésekor!');
+    }
+  }
+
+  // Felhasználói adatok frissítése
   UserModel.findByIdAndUpdate(id, updatedData, { new: true }) 
     .then((data) => {
       if (!data) {
@@ -201,6 +211,7 @@ app.put('/api/updateuser/:id', (req, res) => {
         username: data.username,
         email: data.email,
         profileImage: data.profileImage,
+        password: data.password
       });
     })
     .catch((err) => {
@@ -208,6 +219,7 @@ app.put('/api/updateuser/:id', (req, res) => {
       res.status(500).send('Hiba az adat frissítésekor!');
     });
 });
+
 
 server.listen(port, () => {
   console.log(`Szerver fut a http://localhost:${port} címen`);
