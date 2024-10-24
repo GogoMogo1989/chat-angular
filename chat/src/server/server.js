@@ -70,7 +70,6 @@ app.post('/api/messages', async (req, res) => {
   });
 
   try {
-    // Üzenet elmentése a MongoDB-be
     await newMessage.save();
     console.log('Az üzenet sikeresen elmentve a MongoDB-be!');
     res.status(201).json(newMessage);
@@ -100,7 +99,7 @@ app.post('/api/userregistration', async (req, res) => {
       username,
       password: hashedPassword, 
       email,
-      profileImage: profileImage.replace(/^data:image\/\w+;base64,/, ''),
+      profileImage: profileImage,
     });
 
     await userData.save();
@@ -191,10 +190,6 @@ app.get('/api/getuser/:id', (req, res) => {
 app.put('/api/updateuser/:id', (req, res) => {
   const id = req.params.id;
   const updatedData = req.body; 
-
-  if (updatedData.profileImage) {
-    updatedData.profileImage = updatedData.profileImage.replace(/^data:image\/\w+;base64,/, '');
-  }
 
   UserModel.findByIdAndUpdate(id, updatedData, { new: true }) 
     .then((data) => {

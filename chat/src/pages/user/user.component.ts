@@ -9,11 +9,12 @@ import { HttpClient } from '@angular/common/http';
 export class UserComponent implements OnInit {
 
   isModalOpen = false;
-  selectedFile!: File;
   currentUser: any = { username: '', email: '' };
   password: string = ''; 
   confirmPassword: string = '';  
   passwordMismatch: boolean = false;
+  base64Image: string = ''; 
+  imageError: string = '';
 
   constructor(private http: HttpClient){}
 
@@ -43,10 +44,25 @@ export class UserComponent implements OnInit {
       console.log('Form submitted!', this.currentUser);
       this.closeModal();
     }
+
+    this.updateUserData();
   }
 
   onFileSelected(event: any) {
-    this.selectedFile = event.target.files[0];
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.base64Image = reader.result as string; 
+        this.imageError = '';
+      };
+      reader.onerror = () => {
+        this.imageError = 'Hiba történt a kép feltöltése során.';
+      };
+      reader.readAsDataURL(file); 
+    } else {
+      this.imageError = 'Kérjük, válasszon ki egy képet!';
+    }
   }
 
   getUserData(userId: string) {
@@ -68,7 +84,7 @@ export class UserComponent implements OnInit {
         username: this.currentUser.username,
         email: this.currentUser.email,
         password: this.password, 
-        profileImage: this.selectedFile 
+        profileImage: this.base64Image
       }).subscribe(
         (data) => {
           this.currentUser = data; 
