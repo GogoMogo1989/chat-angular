@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { User } from '../../interfaces/user.model';
 import { AuthService } from '../../service/auth.service';
 import { UserComponent } from '../user/user.component';
+import { UserService } from '../../service/user.service';
 
 @Component({
   selector: 'app-main',
@@ -20,7 +21,12 @@ export class MainComponent implements OnInit, OnDestroy {
 
   @ViewChild('user') user!: UserComponent;
 
-  constructor(private http: HttpClient, private router: Router, private authService: AuthService) {}
+  constructor(
+    private http: HttpClient, 
+    private router: Router, 
+    private authService: AuthService,
+    private userService: UserService
+  ) {}
 
   ngOnInit() {
     const userId = sessionStorage.getItem('userId');
@@ -70,7 +76,7 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   getUserData(userId: string) {
-    this.http.get(`http://localhost:3000/api/getuser/${userId}`).subscribe(
+    this.userService.getUserData(userId).subscribe(
       (data) => {
         this.currentUser = data;
       },
@@ -81,7 +87,7 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   getUsers() {
-    this.http.get<User[]>('http://localhost:3000/api/getuser').subscribe(
+    this.userService.getUsers().subscribe(
       (data) => {
         this.users = data;  
         if (this.users.length > 0) {
