@@ -21,8 +21,8 @@ export class UserService {
     return this.http.get<User[]>(`${this.baseUrl}/getuser/`);
   }
 
-  getMessages(sender: string, receiver: string): Observable<[]> {
-    return this.http.get<[]>(`${this.baseUrl}/messages/${sender}/${receiver}`);
+  getMessages(sender: string, receiver: string): Observable<Messages[]> {
+    return this.http.get<Messages[]>(`${this.baseUrl}/messages/${sender}/${receiver}`);
   }
 
   updateUserData(userId: string, userData: any): Observable<User> {
