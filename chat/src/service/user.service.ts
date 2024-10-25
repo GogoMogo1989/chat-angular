@@ -8,6 +8,7 @@ import { Messages } from '../interfaces/messages.model';
 @Injectable({
   providedIn: 'root'
 })
+
 export class UserService {
   private baseUrl = 'http://localhost:3000/api';
 
