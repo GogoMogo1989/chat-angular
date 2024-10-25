@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { UserService } from '../../service/user.service';
 
@@ -19,7 +18,7 @@ export class UserComponent implements OnInit {
   imageError: string = '';
   isCheckboxChecked = false;
 
-  constructor(private http: HttpClient, private router: Router, private userService: UserService){}
+  constructor(private router: Router, private userService: UserService){}
 
   ngOnInit(): void {
     const userId = sessionStorage.getItem('userId');
