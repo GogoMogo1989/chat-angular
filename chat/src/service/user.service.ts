@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { LoginResponse } from '../interfaces/login.model';
-import { User } from '../interfaces/user.model';
+import { User } from '../interfaces/user.model'; 
+import { Messages } from '../interfaces/messages.model';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +19,10 @@ export class UserService {
 
   getUsers(): Observable<User[]> {
     return this.http.get<User[]>(`${this.baseUrl}/getuser/`);
+  }
+
+  getMessages(sender: string, receiver: string): Observable<[]> {
+    return this.http.get<[]>(`${this.baseUrl}/messages/${sender}/${receiver}`);
   }
 
   updateUserData(userId: string, userData: any): Observable<User> {

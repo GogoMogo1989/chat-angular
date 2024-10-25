@@ -31,8 +31,7 @@ export class LoginComponent {
         this.router.navigate(['/main']);
       },
       (error) => {
-        const errorMessage = error.error ? error.error.message : 'Ismeretlen hiba történt.';
-        alert("Bejelentkezés sikertelen: " + errorMessage); 
+        alert("Bejelentkezés sikertelen: " + error); 
       }
     );
 }

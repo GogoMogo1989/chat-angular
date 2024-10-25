@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { UserService } from '../../service/user.service';
 
 @Component({
@@ -17,7 +16,7 @@ export class RegistrationComponent {
   base64Image: string = ''; 
   imageError: string = '';
 
-  constructor(private router: Router, private http: HttpClient, private userService: UserService) {} 
+  constructor(private router: Router, private userService: UserService) {} 
 
   onFileSelected(event: any) {
     const file = event.target.files[0];
@@ -30,7 +29,7 @@ export class RegistrationComponent {
       reader.onerror = () => {
         this.imageError = 'Hiba történt a kép feltöltése során.';
       };
-      reader.readAsDataURL(file); // Base64 átalakítás
+      reader.readAsDataURL(file);
     } else {
       this.imageError = 'Kérjük, válasszon ki egy képet!';
     }

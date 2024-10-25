@@ -1,10 +1,10 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { User } from '../../interfaces/user.model';
 import { AuthService } from '../../service/auth.service';
 import { UserComponent } from '../user/user.component';
 import { UserService } from '../../service/user.service';
+import { Messages } from '../../interfaces/messages.model';
 
 @Component({
   selector: 'app-main',
@@ -13,7 +13,7 @@ import { UserService } from '../../service/user.service';
 })
 export class MainComponent implements OnInit, OnDestroy {
   users: User[] = []; 
-  messages: { user: string, text: string }[] = []; 
+  messages: { user: string, text: string }[] = [];; 
   currentMessage: string = '';  
   selectedUser!: string
   currentUser: any;
@@ -21,8 +21,7 @@ export class MainComponent implements OnInit, OnDestroy {
 
   @ViewChild('user') user!: UserComponent;
 
-  constructor(
-    private http: HttpClient, 
+  constructor( 
     private router: Router, 
     private authService: AuthService,
     private userService: UserService
@@ -32,7 +31,7 @@ export class MainComponent implements OnInit, OnDestroy {
     const userId = sessionStorage.getItem('userId');
     if (userId) {
       this.getUserData(userId);
-    }
+    } 
     this.getUsers();
     this.setupWebSocket();
   }
@@ -66,7 +65,10 @@ export class MainComponent implements OnInit, OnDestroy {
         (receivedData.sender === this.currentUser.username && receivedData.receiver === this.selectedUser) ||
         (receivedData.sender === this.selectedUser && receivedData.receiver === this.currentUser.username)
       ) {
-        this.messages.push({ user: receivedData.sender, text: receivedData.message });
+        this.messages.push({
+          user: receivedData.sender, 
+          text: receivedData.message
+        });
       }
     };
     
@@ -77,7 +79,7 @@ export class MainComponent implements OnInit, OnDestroy {
 
   getUserData(userId: string) {
     this.userService.getUserData(userId).subscribe(
-      (data) => {
+      (data: User) => {
         this.currentUser = data;
       },
       (error) => {
@@ -88,7 +90,7 @@ export class MainComponent implements OnInit, OnDestroy {
 
   getUsers() {
     this.userService.getUsers().subscribe(
-      (data) => {
+      (data: User[]) => {
         this.users = data;  
         if (this.users.length > 0) {
           this.selectUser(this.users[0]); 
@@ -106,9 +108,13 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   getMessages(sender: string, receiver: string) {
-    this.http.get<{ sender: string, receiver: string, message: string }[]>(`http://localhost:3000/api/messages/${sender}/${receiver}`).subscribe(
-      (data) => {
-        this.messages = data.map(msg => ({ user: msg.sender, text: msg.message }));
+    this.userService.getMessages(sender, receiver).subscribe(
+      (data: Messages[]) => {
+        this.messages = data.map(message => ({ 
+          user: message.sender, 
+          text: message.message 
+          })
+        );
       },
       (error) => {
         console.error('Hiba az üzenetek lekérdezésekor:', error);
@@ -121,13 +127,13 @@ export class MainComponent implements OnInit, OnDestroy {
       return; 
     }
 
-    const messageData = {
+    const messageData: Messages = {
       sender: this.currentUser.username,
       receiver: this.selectedUser,
       message: this.currentMessage
     };
 
-     if (this.ws.readyState === WebSocket.OPEN) {
+    if (this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(messageData));
     }
 
