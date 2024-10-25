@@ -35,6 +35,9 @@
           <button class="user-button cancel" type="button" (click)="closeModal()">Vissza</button>
           <button class="user-button" type="submit" [disabled]="!userForm.valid">Mentés</button>
         </div>
+        <div>
+            <button class="user-button delete" type="button" (click)="userDelete()">Regisztráció Törlés</button>
+        </div>
       </form>
     </div>
   </div>

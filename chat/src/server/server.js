@@ -220,6 +220,19 @@ app.put('/api/updateuser/:id', async (req, res) => {
     });
 });
 
+//User adatok törlése
+app.delete('/api/deleteuser/:id', (req, res) => {
+  const id = req.params.id;
+  UserModel.findByIdAndDelete(id)
+      .then(() => {
+          console.log('Az adat törlése sikeres volt!');
+          res.status(200).json({ message: 'Az adat törlése sikeres volt!' });
+      })
+      .catch((err) => {
+          console.log('Hiba az adat törlésekor:', err);
+          res.status(500).send('Hiba az adat törlésekor!');
+      });
+});
 
 server.listen(port, () => {
   console.log(`Szerver fut a http://localhost:${port} címen`);

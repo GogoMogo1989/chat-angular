@@ -79,6 +79,15 @@
     background-color: #dc2626;
 }
 
+.user-button.delete {
+    margin-top: 15px;
+    background-color: #ef4444;
+}
+
+.user-button.delete:hover {
+    background-color: #dc2626;
+}
+
 .error {
     color: red;
     font-size: 12px;

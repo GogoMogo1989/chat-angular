@@ -1,5 +1,6 @@
 import { Component,OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-user',
@@ -15,8 +16,9 @@ export class UserComponent implements OnInit {
   passwordMismatch: boolean = false;
   base64Image: string = ''; 
   imageError: string = '';
+  isCheckboxChecked = false;
 
-  constructor(private http: HttpClient){}
+  constructor(private http: HttpClient, private router: Router){}
 
   ngOnInit(): void {
     const userId = sessionStorage.getItem('userId');
@@ -95,6 +97,24 @@ export class UserComponent implements OnInit {
           console.error('Hiba a felhasználó frissítésekor:', error);
         }
       );
+    }
+  }
+
+  userDelete(): void {
+    const userId = sessionStorage.getItem('userId');
+
+    if (userId) {
+      this.http.delete(`http://localhost:3000/api/deleteuser/${userId}`).subscribe({
+        next: (response) => {
+          console.log('Felhasználó sikeresen törölve:', response);
+          sessionStorage.removeItem('userId'); 
+          this.router.navigate(['/login']);
+          this.closeModal();
+        },
+        error: (error) => {
+          console.error('Hiba történt a törlés során!', error);
+        }
+      });
     }
   }
 
