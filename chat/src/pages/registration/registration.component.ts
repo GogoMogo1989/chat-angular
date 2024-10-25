@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { UserService } from '../../service/user.service';
 
 @Component({
   selector: 'registration',
@@ -16,7 +17,7 @@ export class RegistrationComponent {
   base64Image: string = ''; 
   imageError: string = '';
 
-  constructor(private router: Router, private http: HttpClient) {} 
+  constructor(private router: Router, private http: HttpClient, private userService: UserService) {} 
 
   onFileSelected(event: any) {
     const file = event.target.files[0];
@@ -37,7 +38,7 @@ export class RegistrationComponent {
 
   onSubmit() {
     if (this.password === this.confirmPassword) {
-      this.http.post('http://localhost:3000/api/userregistration', {
+      this.userService.userRegistration({
         username: this.username, 
         password: this.password, 
         email: this.email,

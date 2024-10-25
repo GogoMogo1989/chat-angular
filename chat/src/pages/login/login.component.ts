@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { Router} from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../service/auth.service';
 import { LoginResponse } from '../../interfaces/login.model';
+import { UserService } from '../../service/user.service';
 
 @Component({
   selector: 'login',
@@ -13,27 +13,29 @@ export class LoginComponent {
   username: string = '';
   password: string = '';
 
-  constructor(private router: Router, private http: HttpClient, private authService: AuthService) {}
+  constructor(
+    private router: Router, 
+    private authService: AuthService, 
+    private userService: UserService
+  ) {}
 
   login() {
-
-    this.http.post<LoginResponse>('http://localhost:3000/api/userlogin', {
+    this.userService.userLogin({
       username: this.username,
       password: this.password
     }).subscribe(
-      response => {
+      (response: LoginResponse) => { 
         sessionStorage.setItem('userId', response.user.id);
         sessionStorage.setItem('username', response.user.username);
-        this.authService.login(response.token)
+        this.authService.login(response.token);
         this.router.navigate(['/main']);
       },
-      error => {
+      (error) => {
         const errorMessage = error.error ? error.error.message : 'Ismeretlen hiba történt.';
         alert("Bejelentkezés sikertelen: " + errorMessage); 
       }
     );
-    
-  }
+}
 
   register() {
     this.router.navigate(['/registration']);

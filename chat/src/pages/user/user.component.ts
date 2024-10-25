@@ -1,6 +1,7 @@
-import { Component,OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { UserService } from '../../service/user.service';
 
 @Component({
   selector: 'app-user',
@@ -18,7 +19,7 @@ export class UserComponent implements OnInit {
   imageError: string = '';
   isCheckboxChecked = false;
 
-  constructor(private http: HttpClient, private router: Router){}
+  constructor(private http: HttpClient, private router: Router, private userService: UserService){}
 
   ngOnInit(): void {
     const userId = sessionStorage.getItem('userId');
@@ -68,7 +69,7 @@ export class UserComponent implements OnInit {
   }
 
   getUserData(userId: string) {
-    this.http.get(`http://localhost:3000/api/getuser/${userId}`).subscribe(
+    this.userService.getUserData(userId).subscribe(
       (data) => {
         this.currentUser = data;
       },
@@ -82,7 +83,7 @@ export class UserComponent implements OnInit {
     const userId = sessionStorage.getItem('userId');
 
     if (userId) {
-      this.http.put(`http://localhost:3000/api/updateuser/${userId}`, {
+      this.userService.updateUserData(userId, {
         username: this.currentUser.username,
         email: this.currentUser.email,
         password: this.password, 
@@ -104,7 +105,7 @@ export class UserComponent implements OnInit {
     const userId = sessionStorage.getItem('userId');
 
     if (userId) {
-      this.http.delete(`http://localhost:3000/api/deleteuser/${userId}`).subscribe({
+      this.userService.deleteUser(userId).subscribe({
         next: (response) => {
           console.log('Felhasználó sikeresen törölve:', response);
           sessionStorage.removeItem('userId'); 
