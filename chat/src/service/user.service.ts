@@ -15,11 +15,11 @@ export class UserService {
   constructor(private http: HttpClient) { }
 
   getUserData(userId: string): Observable<User> {
-    return this.http.get<User>(`${this.baseUrl}/getuser/${userId}`);
+    return this.http.get<User>(`${this.baseUrl}/user/${userId}`);
   }
 
   getUsers(): Observable<User[]> {
-    return this.http.get<User[]>(`${this.baseUrl}/getuser/`);
+    return this.http.get<User[]>(`${this.baseUrl}/user`);
   }
 
   getMessages(sender: string, receiver: string): Observable<Messages[]> {
@@ -27,18 +27,18 @@ export class UserService {
   }
 
   updateUserData(userId: string, userData: any): Observable<User> {
-    return this.http.put<User>(`${this.baseUrl}/updateuser/${userId}`, userData);
+    return this.http.put<User>(`${this.baseUrl}/user/update/${userId}`, userData);
   }
 
   deleteUser(userId: string): Observable<User> {
-    return this.http.delete<User>(`${this.baseUrl}/deleteuser/${userId}`);
+    return this.http.delete<User>(`${this.baseUrl}/user/delete/${userId}`);
   }
 
   userRegistration(userData: any): Observable<User> {
-    return this.http.post<User>(`${this.baseUrl}/userregistration`, userData);
+    return this.http.post<User>(`${this.baseUrl}/user/registration`, userData);
   }
 
   userLogin(userData: any): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.baseUrl}/userlogin`, userData);
+    return this.http.post<LoginResponse>(`${this.baseUrl}/user/login`, userData);
   }
 }
