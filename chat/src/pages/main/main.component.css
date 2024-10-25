@@ -180,3 +180,8 @@
 .user-button:hover {
     background-color: #2563eb;
 }
+
+.users-list li.new-message {
+    background-color: #10b981; 
+    color: white;
+}

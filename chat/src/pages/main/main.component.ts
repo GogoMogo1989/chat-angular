@@ -18,6 +18,7 @@ export class MainComponent implements OnInit, OnDestroy {
   selectedUser!: string
   currentUser: any;
   private ws!: WebSocket;
+  hasNewMessage?: boolean;
 
   @ViewChild('user') user!: UserComponent;
 
@@ -69,6 +70,11 @@ export class MainComponent implements OnInit, OnDestroy {
           user: receivedData.sender, 
           text: receivedData.message
         });
+      } else if (receivedData.receiver === this.currentUser.username && receivedData.sender !== this.selectedUser) {
+        const senderUser = this.users.find(user => user.username === receivedData.sender);
+        if (senderUser) {
+            senderUser.hasNewMessage = true;
+        }
       }
     };
     
@@ -107,6 +113,7 @@ export class MainComponent implements OnInit, OnDestroy {
   selectUser(user: User) {
     this.selectedUser = user.username; 
     this.getMessages(this.currentUser.username, this.selectedUser);
+    user.hasNewMessage = false
   }
 
   getMessages(sender: string, receiver: string) {

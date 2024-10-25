@@ -2,11 +2,15 @@
     <div class="users-list">
         <h3>Felhasználók</h3>
         <ul>
-            <li *ngFor="let user of users" (click)="selectUser(user)" [class.selected]="selectedUser === user.username">
-            <div class="profile-image-wrapper">
-                <img [src]="user.profileImage" alt="{{ user.username }}" class="profile-image">
-            </div>
-            <span>{{ user.username }}</span>
+            <li 
+                *ngFor="let user of users" 
+                (click)="selectUser(user)" 
+                [class.selected]="selectedUser === user.username"
+                [ngClass]="{'new-message': user.hasNewMessage}">
+                <div class="profile-image-wrapper">
+                    <img [src]="user.profileImage" alt="{{ user.username }}" class="profile-image">
+                </div>
+                <span>{{ user.username }}</span>
             </li>
         </ul>
     </div>
