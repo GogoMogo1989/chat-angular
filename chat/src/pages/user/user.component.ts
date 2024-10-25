@@ -18,7 +18,10 @@ export class UserComponent implements OnInit {
   imageError: string = '';
   isCheckboxChecked = false;
 
-  constructor(private router: Router, private userService: UserService){}
+  constructor(
+    private router: Router, 
+    private userService: UserService
+  ){}
 
   ngOnInit(): void {
     const userId = sessionStorage.getItem('userId');
@@ -68,12 +71,13 @@ export class UserComponent implements OnInit {
   }
 
   getUserData(userId: string) {
-    this.userService.getUserData(userId).subscribe(
-      (data) => {
-        this.currentUser = data;
-      },
-      (error) => {
-        console.error('Hiba a felhasználói adatok lekérdezésekor:', error);
+    this.userService.getUserData(userId).subscribe({
+        next: (data) => {
+          this.currentUser = data;
+        },
+        error: (error) => {
+          console.error('Hiba a felhasználói adatok lekérdezésekor:', error);
+        }
       }
     );
   }
@@ -87,14 +91,15 @@ export class UserComponent implements OnInit {
         email: this.currentUser.email,
         password: this.password, 
         profileImage: this.base64Image
-      }).subscribe(
-        (data) => {
-          this.currentUser = data; 
-          console.log('Felhasználó sikeresen frissítve!', data);
-          this.closeModal();
-        },
-        (error) => {
-          console.error('Hiba a felhasználó frissítésekor:', error);
+      }).subscribe({
+          next: (data) => {
+            this.currentUser = data; 
+            console.log('Felhasználó sikeresen frissítve!', data);
+            this.closeModal();
+          },
+          error:   (error) => {
+            console.error('Hiba a felhasználó frissítésekor:', error);
+          }
         }
       );
     }

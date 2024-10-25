@@ -112,7 +112,6 @@ app.post('/api/userregistration', async (req, res) => {
   }
 });
 
-
 // User bejelentkezési útvonal
 app.post('/api/userlogin', async (req, res) => {
   const { username, password } = req.body;

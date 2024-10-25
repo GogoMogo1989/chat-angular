@@ -9,6 +9,7 @@ import { UserService } from '../../service/user.service';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
+
 export class LoginComponent {
   username: string = '';
   password: string = '';
@@ -23,18 +24,19 @@ export class LoginComponent {
     this.userService.userLogin({
       username: this.username,
       password: this.password
-    }).subscribe(
-      (response: LoginResponse) => { 
-        sessionStorage.setItem('userId', response.user.id);
-        sessionStorage.setItem('username', response.user.username);
-        this.authService.login(response.token);
-        this.router.navigate(['/main']);
-      },
-      (error) => {
-        alert("Bejelentkezés sikertelen: " + error); 
-      }
+    }).subscribe({
+        next: (response: LoginResponse) => { 
+          sessionStorage.setItem('userId', response.user.id);
+          sessionStorage.setItem('username', response.user.username);
+          this.authService.login(response.token);
+          this.router.navigate(['/main']);
+        },
+        error: (error) => {
+          alert("Bejelentkezés sikertelen: " + error); 
+        }
+      } 
     );
-}
+  }
 
   register() {
     this.router.navigate(['/registration']);

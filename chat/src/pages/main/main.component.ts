@@ -78,27 +78,29 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   getUserData(userId: string) {
-    this.userService.getUserData(userId).subscribe(
-      (data: User) => {
-        this.currentUser = data;
-      },
-      (error) => {
-        console.error('Hiba a felhasználói adatok lekérdezésekor:', error);
-      }
+    this.userService.getUserData(userId).subscribe({
+        next: (data: User) => {
+          this.currentUser = data;
+        },
+        error: (error) => {
+          console.error('Hiba a felhasználói adatok lekérdezésekor:', error);
+        }
+      } 
     );
   }
 
   getUsers() {
-    this.userService.getUsers().subscribe(
-      (data: User[]) => {
-        this.users = data;  
-        if (this.users.length > 0) {
-          this.selectUser(this.users[0]); 
+    this.userService.getUsers().subscribe({
+        next: (data: User[]) => {
+          this.users = data;  
+          if (this.users.length > 0) {
+            this.selectUser(this.users[0]); 
+          }
+        },
+        error: (error) => {
+          console.error('Hiba a felhasználók lekérdezésekor:', error);
         }
-      },
-      (error) => {
-        console.error('Hiba a felhasználók lekérdezésekor:', error);
-      }
+      } 
     );
   }
 
@@ -108,17 +110,18 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   getMessages(sender: string, receiver: string) {
-    this.userService.getMessages(sender, receiver).subscribe(
-      (data: Messages[]) => {
-        this.messages = data.map(message => ({ 
-          user: message.sender, 
-          text: message.message 
-          })
-        );
-      },
-      (error) => {
-        console.error('Hiba az üzenetek lekérdezésekor:', error);
-      }
+    this.userService.getMessages(sender, receiver).subscribe({
+        next: (data: Messages[]) => {
+          this.messages = data.map(message => ({ 
+            user: message.sender, 
+            text: message.message 
+            })
+          );
+        },
+        error: (error) => {
+          console.error('Hiba az üzenetek lekérdezésekor:', error);
+        }
+      } 
     );
   }
 

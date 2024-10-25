@@ -16,7 +16,10 @@ export class RegistrationComponent {
   base64Image: string = ''; 
   imageError: string = '';
 
-  constructor(private router: Router, private userService: UserService) {} 
+  constructor(
+    private router: Router, 
+    private userService: UserService
+  ) {} 
 
   onFileSelected(event: any) {
     const file = event.target.files[0];
@@ -42,15 +45,15 @@ export class RegistrationComponent {
         password: this.password, 
         email: this.email,
         profileImage: this.base64Image
-      }).subscribe(
-        success => {
-          alert('Regisztráció sikeres!');
-          this.router.navigate(['/login']);
+      }).subscribe({  
+          next: () => {
+            alert('Regisztráció sikeres!');
+            this.router.navigate(['/login']);
+          },
+          error: (error) => {
+            alert("Regisztráció sikertelen: " + error);
+          }
         },
-        error => {
-          const errorMessage = error.error ? error.error.message : 'Ismeretlen hiba történt.';
-          alert("Regisztráció sikertelen: " + errorMessage);
-        }
       );
     } else {
       alert('A jelszavak nem egyeznek!');
