@@ -37,8 +37,9 @@ module.exports = function (server) {
         await newMessage.save();
         console.log('Üzenet elmentve az adatbázisba!');
 
+        // Továbbítsa az új üzenetet csak a feladónak és a címzettnek
         wss.clients.forEach((client) => {
-            if (client.readyState === WebSocket.OPEN) {
+            if (client.readyState === WebSocket.OPEN && (client.username === sender || client.username === receiver)) {
                 client.send(JSON.stringify({
                   sender,
                   receiver,
