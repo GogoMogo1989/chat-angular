@@ -6,13 +6,12 @@ module.exports = function (server) {
 
   wss.on('connection', (ws) => {
 
-    // Üzenetek fogadása a kliensről
     ws.on('message', async (message) => {
       
       try {
         const parsedMessage = JSON.parse(message);
 
-        // Ha ez az első üzenet, a felhasználónév beállítása
+        // Felhasználónév beállítása
         if (parsedMessage.username) {
           ws.username = parsedMessage.username; 
           console.log(`Felhasználó csatlakozott: ${ws.username}`);
@@ -26,7 +25,6 @@ module.exports = function (server) {
           return;
         }
 
-        // Új üzenet mentése az adatbázisba
         const chatId = [sender, receiver].sort().join('-');
         const newMessage = new MessageModel({
           chatId,
@@ -39,9 +37,8 @@ module.exports = function (server) {
         await newMessage.save();
         console.log('Üzenet elmentve az adatbázisba!');
 
-        // Továbbítsa az új üzenetet csak a feladónak és a címzettnek
         wss.clients.forEach((client) => {
-            if (client.readyState === WebSocket.OPEN && (client.username === sender || client.username === receiver)) {
+            if (client.readyState === WebSocket.OPEN) {
                 client.send(JSON.stringify({
                   sender,
                   receiver,
