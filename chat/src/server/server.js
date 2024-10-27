@@ -16,7 +16,6 @@ WebSocketServer(server);
 app.use(cors());
 app.use(express.json({ limit: '500mb' }));
 
-//Mongodb
 mongoose.connect(url) 
   .then(() => {
     console.log('A MongoDB adatbázishoz sikeresen kapcsolódva!');
@@ -25,11 +24,9 @@ mongoose.connect(url)
     console.log('Hiba a MongoDB adatbázis kapcsolat során:', error);
   });
 
-// Route-ok importálása
 const messagesRoutes = require('./routes/messages');
 const usersRoutes = require('./routes/user');
 
-// Route-ok használata
 app.use('/api/messages', messagesRoutes);
 app.use('/api/user', usersRoutes);
 
