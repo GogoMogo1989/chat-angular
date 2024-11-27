@@ -44,7 +44,7 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   setupWebSocket() {
-    this.ws = new WebSocket('ws://localhost:3000'); 
+    this.ws = new WebSocket('wss://chat-angular.onrender.com/'); 
 
     this.ws.onopen = () => {
 

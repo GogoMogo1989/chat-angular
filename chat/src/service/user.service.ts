@@ -10,7 +10,7 @@ import { Messages } from '../interfaces/messages.model';
 })
 
 export class UserService {
-  private baseUrl = 'http://localhost:3000/api';
+  private baseUrl = 'https://chat-angular.onrender.com/api';
 
   constructor(private http: HttpClient) { }
 
