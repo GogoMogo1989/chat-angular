@@ -1,4 +1,5 @@
 <div class="chat-container">
+  <div class="user-message-container">
     <div class="users-list">
         <h3>Felhasználók</h3>
         <ul>
@@ -26,12 +27,17 @@
         <button (click)="sendMessage()">Küldés</button>
       </div>
     </div>
-    
+  </div>
+  
     <div class="user-info" >
-      <img [src]="currentUser?.profileImage" alt="Profile Picture" class="profile-picture" />
-      <h2>{{currentUser?.username}}</h2>
-      <button (click)="logout()" class="logout-button">Kijelentkezés</button>
-      <button (click)="openUser()" class="user-button">Szerkesztés</button>
+      <div class="user-img-h2">
+        <img [src]="currentUser?.profileImage" alt="Profile Picture" class="profile-picture" />
+        <h2>{{currentUser?.username}}</h2>
+      </div>
+      <div class="user-info-button">
+        <button (click)="logout()" class="logout-button">Kijelentkezés</button>
+        <button (click)="openUser()" class="user-button">Szerkesztés</button>
+      </div>
       <app-user #user></app-user>
     </div>
   </div>
