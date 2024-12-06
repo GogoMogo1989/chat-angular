@@ -1,15 +1,15 @@
 [build]
   # Az alkalmazás gyökérkönyvtára, ahol a forráskód és az Angular projekt található.
-  base = "/opt/build/repo/chat"
+  base = "chat"
 
   # A build parancs, amely lefuttatja az Angular buildet.
   command = "ng build --configuration=production"
 
   # A publikálás könyvtára, amely tartalmazza a kész statikus fájlokat.
-  publish = "dist/chat/browser"
+  publish = "dist/chat/browser/browser"
 
 [[redirects]]
-  from = "/*"
+  from = "/login"
   to = "/index.html"
   status = 200
   force = true
