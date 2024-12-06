@@ -1,8 +1,5 @@
-[build]
-  base = "/opt/build/repo/chat"
-  command = "ng build --configuration=production"
-  publish = "dist/chat/browser"
-
-[[plugins]]
-  package = "@netlify/angular-runtime"
-  inputs = {}
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200
+force = true
