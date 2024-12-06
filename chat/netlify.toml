@@ -6,7 +6,7 @@
   command = "ng build --configuration=production"
 
   # A publikálás könyvtára, amely tartalmazza a kész statikus fájlokat.
-  publish = "dist/chat/browser/browser"
+  publish = "dist/chat/browser"
 
 [[redirects]]
   from = "/login"
